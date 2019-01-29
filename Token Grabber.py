@@ -5,11 +5,6 @@
 # Essentially uhh. no comment.
 # requirements as follows.
 
-# TODO
-
-'''
-1. Cause crash so we can generate a logfile. - don't really need to do this anymore
-'''
 from dhooks import Webhook, File # we can supply this so we can use local file instead of downloading it
 import os
 import requests
